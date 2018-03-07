@@ -62,7 +62,7 @@ NODATA_value  -2
 63 64 65 66 67 68 69 70 71 72
 73 74 75 76 77 78 79 80 81 82
 83 84 85 86 87 88 89 90 91 92</pre>
-In this example each cell is a patch and subject to optimization, except those cells with value 0 (which is in this case land use class 8). Be aware, the more patches you include the more complex is the optimization problem and the more computation time is needed. CoMOLA might perform poor if the number of numbers of patches is too large (>100).
+In this example each cell is a patch and subject to optimization, except those cells with value 0 (which is in this case land use class 8). Be aware, the more patches you include the more complex is the optimization problem and the more computation time is needed. CoMOLA might perform poor if the numbers of patches is too large (>100).
 
 ### __Constraints__
 
@@ -102,10 +102,10 @@ setwd("C:/+STRAUCH+/+PAPER\_WORK+/Opti-Tool/CoMOLA\_basic/models/SYM")
 sink("C:/+STRAUCH+/+PAPER\_WORK+/Opti-Tool/CoMOLA\_basic/models/SYM/console.txt", append=FALSE)
 ##########################################################################################
 #
-#     ~ ~ ~ Simple Yield Model (SYM) ~ ~ ~
-#     ~ ~ ~ this is just a toy model ~ ~ ~
+#     - - - Simple Yield Model (SYM) - - -
+#     - - - this is just a toy model - - -
 #
-#     ~ ~ ~ Input data ~ ~ ~
+#     - - - Input data - - -
 #    land_use.asc        |land use map containing the following classes
 #                        |1,2,3,4,5 = arable land with increasing intensity from 1 to 5
 #                        |6 = forest
