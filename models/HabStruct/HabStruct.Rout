@@ -1,0 +1,1139 @@
+
+R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
+Copyright (C) 2016 The R Foundation for Statistical Computing
+Platform: x86_64-w64-mingw32/x64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> setwd("C:/+STRAUCH+/+PAPER_WORK+/Opti-Tool/CoMOLA_basic/models/HabStruct")
+> sink("C:/+STRAUCH+/+PAPER_WORK+/Opti-Tool/CoMOLA_basic/models/HabStruct/console.txt", append=FALSE)
+> ##########################################################################################
+> #
+> #     ~ ~ ~ Simple habitat quality model based on landscape structure - Anna Cord 20.04.2015 ~ ~ ~
+> #
+> #
+> #     ~ ~ ~ Input data ~ ~ ~
+> #    land_use.asc        |land use map containing the following classes
+> #                        |1,2,3,4,5 = arable land with increasing intensity from 1 to 5
+> #                        |6 = forest
+> #                        |7 = pasture
+> #                        |8 = urban area
+> #                        |-2 = no data
+> #    Objective: Maximize edges (-> complex habitat structure)
+> #
+> ##########################################################################################
+> 
+> # set working directory
+> 
+> # read in ascii files
+> lu.map <- read.table("map.asc", h=F, skip=6, sep=" ")
+> #plot(lu.map, col= c("khaki1","khaki2","gold1","gold2","gold3","darkolivegreen3","forestgreen","firebrick"))
+> 
+> #################### Function for counting habitat edges ####################
+> edgecount <- function(x){  
++   x<-as.matrix(x)
++   x[x==-2] <- NA
++   r<-nrow(x)
++   c<-ncol(x)
++   y <- matrix(ncol=ncol(x), nrow=nrow(x))
++   z <- y
++   
++   for (i in 1:(r-1)){
++     for (j in 1:(c)){
++       y[i,j]<-(as.numeric((x[i,j]==x[i+1,j])==FALSE))
++     }}
++   
++   for (j in 1:(c-1)){
++     for (i in 1:(r)){
++       z[i,j]<-(as.numeric((x[i,j]==x[i,j+1])==FALSE))
++     }}
++   edges.horizontal <- length(which(y == 1))
++   edges.vertical <- length(which(z == 1))
++   edges.total <- edges.horizontal+edges.vertical
++ }
+> 
+> ####################  Count only "full" edges (=1)  ####################
+> 
+> # Recode land use map so that edges between not considered land use classes are ignored
+> lu.map.1 <- lu.map
+> lu.map.1[lu.map.1 >=2 & lu.map.1 <= 5] <- -2 # replace cells with arable land
+> lu.map.1[lu.map.1 == 8] <- -2 # replace cells with urban area
+> #lu.map.1
+> 
+> edges.1 <- edgecount(lu.map.1)
+> edges.1[is.na(edges.1)] <- 0
+> #edges.1
+> 
+> ####################  Count only edges with arable with land with intensity = 2 (=0.5)  ####################
+> 
+> # Recode land use map so that edges between not considered land use classes are ignored
+> lu.map.0.5 <- lu.map
+> lu.map.0.5[lu.map.0.5 >=3 & lu.map.0.5 <= 5] <- -2 # replace cells with arable land
+> lu.map.0.5[lu.map.0.5 <=1] <- -2 # replace cells with arable land
+> lu.map.0.5[lu.map.0.5 == 8] <- -2 # replace cells with urban area
+> lu.map.0.5[lu.map.0.5 == 6] <- 1 # replace cells with pasture
+> lu.map.0.5[lu.map.0.5 == 7] <- 1 # replace cells with forest
+> #lu.map.0.5
+> 
+> edges.0.5 <- edgecount(lu.map.0.5)
+> edges.0.5[is.na(edges.0.5)] <- 0
+> edges.0.5.weighted <- edges.0.5 *1/2
+> #edges.0.5.weighted
+> 
+> ####################  Count only edges with arable with land with intensity = 3 (=1/3)  ####################
+> 
+> # Recode land use map so that edges between not considered land use classes are ignored
+> lu.map.0.33 <- lu.map
+> lu.map.0.33[lu.map.0.33 == 4] <- -2 # replace cells with arable land
+> lu.map.0.33[lu.map.0.33 == 5] <- -2 # replace cells with arable land
+> lu.map.0.33[lu.map.0.33 <=2] <- -2 # replace cells with arable land
+> lu.map.0.33[lu.map.0.33 == 8] <- -2 # replace cells with urban area
+> lu.map.0.33[lu.map.0.33 == 6] <- 1 # replace cells with pasture
+> lu.map.0.33[lu.map.0.33 == 7] <- 1 # replace cells with forest
+> #lu.map.0.33
+> 
+> edges.0.33 <- edgecount(lu.map.0.33)
+> edges.0.33[is.na(edges.0.33)] <- 0
+> edges.0.33.weighted <- edges.0.33 *1/3
+> #edges.0.33.weighted
+> 
+> ####################  Count only edges with arable with land with intensity = 4 (=1/4)  ####################
+> 
+> # Recode land use map so that edges between not considered land use classes are ignored
+> lu.map.0.25 <- lu.map
+> lu.map.0.25[lu.map.0.25 == 5] <- -2 # replace cells with arable land
+> lu.map.0.25[lu.map.0.25 <= 3] <- -2 # replace cells with arable land
+> lu.map.0.25[lu.map.0.25 == 8] <- -2 # replace cells with urban area
+> lu.map.0.25[lu.map.0.25 == 6] <- 1 # replace cells with pasture
+> lu.map.0.25[lu.map.0.25 == 7] <- 1 # replace cells with forest
+> #lu.map.0.25
+> 
+> edges.0.25 <- edgecount(lu.map.0.25)
+> edges.0.25[is.na(edges.0.25)] <- 0
+> edges.0.25.weighted <- edges.0.25 *1/4
+> #edges.0.25.weighted
+> 
+> ####################  Count only edges with arable with land with intensity = 5 (=1/5)  ####################
+> 
+> # Recode land use map so that edges between not considered land use classes are ignored
+> lu.map.0.2 <- lu.map
+> lu.map.0.2[lu.map.0.2 <= 4] <- -2 # replace cells with arable land
+> lu.map.0.2[lu.map.0.2 == 8] <- -2 # replace cells with urban area
+> lu.map.0.2[lu.map.0.2 == 6] <- 1 # replace cells with pasture
+> lu.map.0.2[lu.map.0.2 == 7] <- 1 # replace cells with forest
+> #lu.map.0.2
+> 
+> edges.0.2 <- edgecount(lu.map.0.2)
+> edges.0.2[is.na(edges.0.2)] <- 0
+> edges.0.2.weighted <- edges.0.2 *1/5
+> #edges.0.2.weighted
+> 
+> 
+> edges <- edges.1 + edges.0.5.weighted + edges.0.33.weighted + edges.0.25.weighted + edges.0.2.weighted
+> 
+> # write model output
+> write.table(edges, "HabStruct_output.csv",append=FALSE ,sep =";",col.names=FALSE ,row.names=FALSE)
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> 
+> sink()
+> 
+> proc.time()
+   user  system elapsed 
+   0.28    0.06    0.32 
