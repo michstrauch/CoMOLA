@@ -2,7 +2,8 @@ setwd("C:/+STRAUCH+/+PAPER_WORK+/Opti-Tool/CoMOLA_basic/models/HabStruct")
 sink("C:/+STRAUCH+/+PAPER_WORK+/Opti-Tool/CoMOLA_basic/models/HabStruct/console.txt", append=FALSE)
 ##########################################################################################
 #
-#     ~ ~ ~ Simple habitat quality model based on landscape structure - Anna Cord 20.04.2015 ~ ~ ~
+#     ~ ~ ~ Simple habitat quality model based on landscape structure ~ ~ ~
+#     ~ ~ ~ this is just a toy model ~ ~ ~
 #
 #
 #     ~ ~ ~ Input data ~ ~ ~

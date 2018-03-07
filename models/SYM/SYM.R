@@ -2,8 +2,8 @@ setwd("C:/+STRAUCH+/+PAPER_WORK+/Opti-Tool/CoMOLA_basic/models/SYM")
 sink("C:/+STRAUCH+/+PAPER_WORK+/Opti-Tool/CoMOLA_basic/models/SYM/console.txt", append=FALSE)
 ##########################################################################################
 #
-#     ~ ~ ~ Simple Yield Model (SYM) - M. Strauch 16.04.2015 ~ ~ ~
-#
+#     ~ ~ ~ Simple Yield Model (SYM) ~ ~ ~
+#     ~ ~ ~ this is just a toy model ~ ~ ~
 #     ~ ~ ~ Input data ~ ~ ~
 #    land_use.asc        |land use map containing the following classes
 #                        |1,2,3,4,5 = arable land with increasing intensity from 1 to 5

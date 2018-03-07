@@ -2,7 +2,8 @@ setwd("C:/+STRAUCH+/+PAPER_WORK+/Opti-Tool/CoMOLA_basic/models/SAR")
 sink("C:/+STRAUCH+/+PAPER_WORK+/Opti-Tool/CoMOLA_basic/models/SAR/console.txt", append=FALSE)
 ##########################################################################################
 #
-#     ~ ~ ~ Simple SAR (Species Area relationship) Model - Anna Cord 20.04.2015 ~ ~ ~
+#     ~ ~ ~ Simple SAR (Species Area relationship) Model ~ ~ ~
+#     ~ ~ ~ this is just a toy model ~ ~ ~
 #
 #     ~ ~ ~ Input data ~ ~ ~
 #    land_use.asc        |land use map containing the following classes

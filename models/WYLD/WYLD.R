@@ -2,7 +2,8 @@ setwd("C:/+STRAUCH+/+PAPER_WORK+/Opti-Tool/CoMOLA_basic/models/WYLD")
 sink("C:/+STRAUCH+/+PAPER_WORK+/Opti-Tool/CoMOLA_basic/models/WYLD/console.txt", append=FALSE)
 ##########################################################################################
 #
-#     ~ ~ ~ Simple model to predict water yield (WYLD) - M. Strauch 31.08.2016 ~ ~ ~
+#     ~ ~ ~ Simple model to predict water yield (WYLD) ~ ~ ~
+#     ~ ~ ~ this is just a toy model ~ ~ ~
 #
 #     ~ ~ ~ Input data ~ ~ ~
 #    land_use.asc        |land use map containing the following classes
