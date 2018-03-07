@@ -20,7 +20,7 @@ Furthermore you need to install R to run external models.
 
 __Land use map (required)__
 
-Provide a land use raster map in ascii format (with consecutive integer values representing the different land use classes, starting with value 1). If no user-defined patch ID map is given, CoMOLA generates a patch map where neighboring raster cells of the same type are aggregated.
+Provide a land use raster map in ascii format (with consecutive integer values representing the different land use classes, starting with value 1). If no user-defined patch ID map is given, CoMOLA generates a patch ID map where neighboring raster cells of the same type are aggregated.
 
 Example *(land\_use.asc)*: <pre>
 ncols         10
@@ -39,10 +39,11 @@ NODATA_value  -2
 5 5 6 6 3 4 7 5 1 1
 2 2 6 6 3 4 7 3 3 3
 2 6 7 7 3 2 2 1 1 1</pre>
+This example shows a land use map with 8 land use classes distributed over 100 raster cells. For this example map (and the transition matrix given below) CoMOLA would generate a patch ID map with 39 different patches. The patch ID map is then encoded as a string of integers (each value is called a gene, representing the land use of a patch) to form the genome of the start individual, i.e. the first individual of the initial population. 
 
 __Patch ID map (optional)__
 
-If appropriate provide a Patch ID map as ascii file to delineate the spatial optimization units as needed in your specific case (with consecutive integer values representing the different patches, starting with value 1). For a cell-level optimization, an individual ID must be assigned to each cell. The spatial resolution must be the same as for the land use map. 
+If appropriate provide your own Patch ID map as ascii file to delineate the spatial optimization units as needed in your specific case (with consecutive integer values representing the different patches, starting with value 1). For a cell-level optimization, an individual ID must be assigned to each cell. The spatial resolution must be the same as for the land use map. A value of 0 defines patches with a static land use. Whether a land use class is static or not must be also defined in the transition matrix (see below). Static land use classes will be excluded from the optimization.
 
 Example *(patch\_IDmap\_eachcell\_constraint.asc)*: <pre>
 ncols         10
@@ -61,6 +62,7 @@ NODATA_value  -2
 63 64 65 66 67 68 69 70 71 72
 73 74 75 76 77 78 79 80 81 82
 83 84 85 86 87 88 89 90 91 92</pre>
+In this example each cell is a patch and subject to optimization, except those cells with value 0 (which is in this case land use class 8). Be aware, the more patches you include the more complex is the optimization problem and the more computation time is needed. CoMOLA might perform poor if the number of numbers of patches is too large (>100).
 
 ### __Constraints__
 
@@ -68,7 +70,7 @@ CoMOLA can handle two types of land use change constraints (simultaneously or st
 
 __(1) Transition matrix__
 
-Constraint defining which type of land use (given in rows) can be converted into which other type (given in columns). 1 = transition is possible, 0 = transition is not possible. 
+A matrix provided as .txt file defining which type of land use (given in rows) can be converted into which other type (given in columns). 1 = transition is possible, 0 = transition is not possible. 
 
 Example *(transition\_matrix.txt)*: <pre>
 -2 1 2 3 4 5 6 7 8
@@ -80,11 +82,11 @@ Example *(transition\_matrix.txt)*: <pre>
 6 0 0 0 0 0 1 1 0
 7 0 0 0 0 0 0 1 0
 8 0 0 0 0 0 0 0 1</pre>
-
+Please note, land use class 8 is defined as static since it cannot be converted into another class, nor can a another class be converted into class 8.
 
 __(2) Total area__
 
-Constraint defining minimum and maximum area proportions of each land use type within the study area.
+A table provided as .txt file defining minimum and maximum area proportions of each land use type as percentage on total area.
 
 Example *(min\_max.txt)*: <pre>
 land_use 1 2 3 4 5 6 7 8
@@ -93,7 +95,7 @@ max 100 100 100 100 100 25 30 100</pre>
 
 ## __External models__
 
-CoMOLA handles up to four external models which must be provided as R scripts and stored in a separate directory within the models folder. Each model evaluates the land use map (see above) for a specific objective that should be maximized (e.g. a certain ecosystem service). The output of each model is a single value representative for the whole study area (e.g. total agricultural yield) and needs to be written in a .csv file. If the objective value should be minimzed during optimization, multiply with -1.
+CoMOLA handles up to four external models which must be provided as R scripts and stored in separate directories within the models folder (together with their specific input data). Each model evaluates the land use ascii map (as given above) for a specific objective that should be maximized (e.g. a certain ecosystem service). The output of each model is a single value representative for the whole study area (e.g. total agricultural yield) and needs to be written in a .csv file. If the objective value should be minimzed during optimization, multiply the model output with -1.
 
 Example *(SYM.R)*: <pre>
 setwd("C:/+STRAUCH+/+PAPER\_WORK+/Opti-Tool/CoMOLA\_basic/models/SYM")
@@ -139,6 +141,8 @@ sink()</pre>
 ## __Configuration and optimization settings (config.ini)__
 
 All relevant settings, such as paths to input data and models as well as optimization-specific parameters and settings related to constraint-handling and raster map-analysis are managed in one single control file called "config.ini".
+
+config.ini example and description of variables:
 
 ## __Running CoMOLA__
 
