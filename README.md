@@ -6,14 +6,15 @@ CoMOLA is a free Python tool to optimize the allocation of land use for multiple
 
 CoMOLA was developed and tested for Python 2.7.
 
-* _Required Python packages_
+* Required Python packages
   * matplotlib
   * numpy
   * pylab
 
-Furthermore you need to install R to run external models
+Furthermore you need to install R to run external models.
 
-## __Input__ *(see example files in input folder)*
+## __Input__
+*(see example files in input folder)*
 
 ### __Maps__
 
@@ -47,4 +48,7 @@ All relevant settings, such as paths to input data and models as well as optimiz
 
 ## __Running CoMOLA__
 
-Call "python __init__.py" from the console within your CoMOLA folder. You can limit the maximum number of threads to be used for parallel computation by adding "-t x" to the command, where x is the maximum number of threads, e.g. "python __init__.py -t 2" to use two cores in maximum.
+Call <pre>
+"python __init__.py" 
+
+from the console within your CoMOLA folder. You can limit the maximum number of threads to be used for parallel computation by adding "-t x" to the command, where x is the maximum number of threads, e.g. "python __init__.py -t 2" to use two cores in maximum.
