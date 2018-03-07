@@ -30,11 +30,11 @@ If appropriate provide a Patch ID map as ascii file to delineate the spatial opt
 
 CoMOLA can handle two types of land use change constraints (simultaneously or stand-alone):
 
-__Transition matrix__ *(see "transition_matrix.txt")*
+__(1) Transition matrix__ *(see "transition_matrix.txt")*
 
 Constraint defining which type of land use (given in rows) can be converted into which other type (given in columns). 1 = transition is possible, 0 = transition is not possible. 
 
-_Total area_ *(see "min_max.txt")*
+__(2) Total area__ *(see "min_max.txt")*
 
 Constraint defining minimum and maximum area proportions of each land use type within the study area.
 
@@ -48,7 +48,9 @@ All relevant settings, such as paths to input data and models as well as optimiz
 
 ## __Running CoMOLA__
 
-Call <pre>
-"python __init__.py" 
+Call from the console (within your CoMOLA folder): <pre>
+python \_\_init\_\_.py </pre>
 
-from the console within your CoMOLA folder. You can limit the maximum number of threads to be used for parallel computation by adding "-t x" to the command, where x is the maximum number of threads, e.g. "python __init__.py -t 2" to use two cores in maximum.
+You can limit the maximum number of threads to be used for parallel computation by adding "-t x" to the command, where x is the maximum number of threads, e.g. <pre>
+python \_\_init\_\_.py -t 2 </pre> 
+to use two cores in maximum.
