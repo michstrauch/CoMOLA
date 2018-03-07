@@ -97,47 +97,6 @@ max 100 100 100 100 100 25 30 100</pre>
 
 CoMOLA handles up to four external models which must be provided as R scripts and stored in separate directories within the models folder (together with their specific input data). Each model evaluates the land use ascii map (as given above) for a specific objective that should be maximized (e.g. a certain ecosystem service). The output of each model is a single value representative for the whole study area (e.g. total agricultural yield) and needs to be written in a .csv file. If the objective value should be minimzed during optimization, multiply the model output with -1.
 
-Example *(SYM.R)*: <pre>
-setwd("C:/+STRAUCH+/+PAPER\_WORK+/Opti-Tool/CoMOLA\_basic/models/SYM")
-sink("C:/+STRAUCH+/+PAPER\_WORK+/Opti-Tool/CoMOLA\_basic/models/SYM/console.txt", append=FALSE)
-##########################################################################################
-#
-#     - - - Simple Yield Model (SYM) - - -
-#     - - - this is just a toy model - - -
-#
-#     - - - Input data - - -
-#    land_use.asc        |land use map containing the following classes
-#                        |1,2,3,4,5 = arable land with increasing intensity from 1 to 5
-#                        |6 = forest
-#                        |7 = pasture
-#                        |8 = urban area
-#                        |-2 = no data
-#
-#    soil_fertility.asc  |map on soil fertility which can range from 0.1 to 1
-#
-#    Objective: Maximize crop yield
-#
-##########################################################################################
-
-# set working directory
-
-# read in ascii files
-lu.map <- read.table("map.asc", h=F, skip=6, sep=" ")
-fert.map <- read.table("soil\_fertility.asc", h=F, skip=6, sep=" ")
-
-# array index for arable land
-arable.idx <- which(lu.map <= 5 & lu.map > 0, arr.ind=T)
-
-# calculate crop yield as logarithmic function of intensity and soil fertility
-yield <- log(lu.map[arable.idx] * (1 + fert.map[arable.idx]))
-yield[is.na(yield)] <- 0
-yield.sum <- sum(yield)
-
-# write model output
-write.table(yield.sum , "SYM\_output.csv",append=FALSE ,sep =";",col.names=FALSE ,row.names=FALSE)
-
-sink()</pre>
-
 ## __Configuration and optimization settings (config.ini)__
 
 All relevant settings, such as paths to input data and models as well as optimization-specific parameters and settings related to constraint-handling and raster map-analysis are managed in one single control file called "config.ini".
