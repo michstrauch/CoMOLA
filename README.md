@@ -62,7 +62,7 @@ NODATA_value  -2
 63 64 65 66 67 68 69 70 71 72
 73 74 75 76 77 78 79 80 81 82
 83 84 85 86 87 88 89 90 91 92</pre>
-In this example each cell is a patch and subject to optimization, except those cells with value 0 (which is in this case land use class 8). Be aware, the more patches you include the more complex is the optimization problem and the more computation time is needed. CoMOLA might perform poor if the numbers of patches is too large (>100).
+In this example each cell is a patch and subject to optimization, except those cells with value 0 (which is here land use class 8). Be aware, the more patches you include the more complex is the optimization problem and the more computation time is needed. CoMOLA might perform poor if the numbers of patches is too large (>100).
 
 ### __Constraints__
 
@@ -101,7 +101,121 @@ CoMOLA handles up to four external models which must be provided as R scripts an
 
 All relevant settings, such as paths to input data and models as well as optimization-specific parameters and settings related to constraint-handling and raster map-analysis are managed in one single control file called "config.ini".
 
-config.ini example and description of variables:
+config.ini example and description of variables: <pre>
+; -----------------------------------------
+; config\_model 
+, Variable                     Description:
+; ----------                   ------------
+; file\_path\_R                | file path for R
+; file\_path\_Python           | file path for Python
+; modelx\_folder              | file name of model x folder (1 <= x <= 4)
+; file\_modelx                | file name of the model x script
+; file\_outputx               | file name of the output file from model x
+; update\_filesx              | file names which files of the model folder x 
+;                              should be updated in the helping folders
+; max\_range                  | maximum number of land use classes
+; opt\_algorithm (string)     | definition of the optimization algorithm,
+;                              available choices are GA or NSGA2 (default)   
+; RPy\_available (string)     | if RPy2 is available than True or False (default) 
+; map                        | if True individuals are printed as ascii map files into the
+;                              model folders else (default) as vectors in a csv file
+; del\_help\_folders           | if True (default) delete and create all helping folders 
+;                              each time the tool starts, if False you can alternatively
+;                              use the update\_filex entries for updating important files
+; -----------------------------------------
+; config\_optimization\_algorithm 
+, Variable                     Description [default value]:
+; ----------                   ------------
+; pop\_size                   | number of individuals per generation [100]
+; max\_generations            | maximum number of generations [1]
+; mutation\_rate              | probability for mutation [0.1]
+; crossover\_rate             | probability for cross over [1.0]
+; priority                   | land use from NSGA2 candidate is preferred within
+;                              repair mutation [True]
+; maximize                   | direction of optimization [True] 
+; extreme\_seeds              | generate extreme (but feasible) individuals for the first
+;                              generation [False]
+; max\_repair\_trials          | maximum number of repair trials within repair mutation
+;                              [10000]  
+; terminator                 | termination criterion, see inspyred docu [default\_termination]
+; variator                   | variation method, see inspyred docu [default\_variation]
+;                              for constraint-handling and tabu-memory use repair\_mutation
+; selector                   | selection method, see inspyred docu [default\_selection]
+;                              use constrained\_tournament\_selection as alternative to 
+;                              repair\_mutation
+;feasible\_first\_pop          | if True create feasible individuals for first population
+;                              [False]
+;penalty\_function            | 1 or 2 (only for constrained\_tournament\_selection)
+;                                1: absolute violation measure
+;                                2: normalized violation measure (default)
+;plot\_results                | if True plot results into a .png file [False]
+; -----------------------------------------
+; config\_map\_analysis
+; Variable                     Description [default value]:
+; ----------                   ------------
+; file\_landuse\_map           | file name of land use map [none]
+; four\_neighbours            | analysis of four (True) or eight (False) cell neighbours
+;                            | to generate patches [False]
+; file\_patch\_map             | file name of patch ID map [none]
+; file\_transition            | file name of transition matrix [none]
+; file\_area                  | file name of total min-max area table [none]
+; file\_worst\_fitness         | file name of worst fitness values list [none]
+
+
+[config\_model]
+
+file\_path\_R = C:/Program Files/R/R-3.3.1/bin/R.exe
+file\_path\_Python = C:/Python27/python.exe
+
+model1\_folder = HabStruct
+file\_model1 = HabStruct.R
+file\_output1 = HabStruct\_output.csv 
+
+model2\_folder = SYM
+file\_model2 = SYM.R
+file\_output2 = SYM\_output.csv 
+
+model3\_folder = WYLD
+file\_model3 = WYLD.R
+file\_output3 = WYLD\_output.csv 
+
+;model4\_folder = SAR
+;file\_model4 = SAR.R
+;file\_output4 = SAR\_output.csv 
+
+max\_range = 8
+opt\_algorithm = NSGA2     
+RPy2\_available = False
+map = True
+del\_help\_folders = True
+
+[config\_optimization\_algorithm]
+
+pop\_size = 10 
+max\_generations = 2
+mutation\_rate = 0.01
+crossover\_rate = 0.9
+priority = True
+maximize = True
+extreme\_seeds = False
+max\_repair\_trials = 10000
+
+terminator = special\_termination,generation\_termination,diversity\_termination 
+variator = n\_point\_crossover, random\_reset\_mutation, repair\_mutation
+;variator = n\_point\_crossover, random\_reset\_mutation
+;selector = constrained\_tournament\_selection
+feasible\_first\_pop = True
+;penalty\_function = 2
+;plot\_results = True
+
+[config\_map\_analysis]
+
+file\_landuse\_map = land\_use.asc
+four\_neighbours = True
+;file\_patch\_map = patch\_IDmap\_eachcell\_constraint.asc
+file\_transition = transition\_matrix.txt
+file\_area = min\_max.txt
+file\_worst\_fitness = worst\_fitness\_values\_maximize.txt </pre>
 
 ## __Running CoMOLA__
 
