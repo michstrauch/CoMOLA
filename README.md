@@ -1,6 +1,6 @@
 # __CoMOLA__
 
-CoMOLA is a free Python tool to optimize the allocation of land use for multiple objectives. It builds upon the open source “inspyred” Python library and includes functions for reading, encoding and writing land use maps as well as genome generation and repair mutation algorithms for considering constraints during the optimization procedure. It runs on Windows and Linux and allows for the integration of any model whose prediction (e.g. a value for an ecosystem service) is based on a land use raster map. In its basic form, CoMOLA can be used immediately by inputting a raster map representing the status-quo land use, ready-to-run models written in R including their input data, and (optional) information on constraints. As constraints, the tool can consider (1) transition rules defining which type of land use can be converted into which other type and (2) minimum and maximum area proportions of each land use type within the study area. All relevant settings, such as paths to input data and models as well as optimization-specific parameters (e.g. population size, crossover and mutation rates) and settings related to constraint-handling and raster map-analysis are managed in one single control file ("config.ini").
+CoMOLA is a free Python tool to optimize the allocation of land use for multiple objectives. It builds upon the open source "inspyred" Python library and includes functions for reading, encoding and writing land use maps as well as genome generation and repair mutation algorithms for considering constraints during the optimization procedure. It runs on Windows and Linux and allows for the integration of any model whose prediction (e.g. a value for an ecosystem service) is based on a land use raster map. In its basic form, CoMOLA can be used immediately by inputting a raster map representing the status-quo land use, ready-to-run models written in R including their input data, and (optional) information on constraints. As constraints, the tool can consider (1) transition rules defining which type of land use can be converted into which other type and (2) minimum and maximum area proportions of each land use type within the study area. All relevant settings, such as paths to input data and models as well as optimization-specific parameters (e.g. population size, crossover and mutation rates) and settings related to constraint-handling and raster map-analysis are managed in one single control file ("config.ini").
 
 ## __Installation requirements__
 
@@ -12,6 +12,7 @@ CoMOLA was developed and tested for Python 2.7.
   * pylab
 
 Furthermore you need to install R to run external models.
+
 
 ## __Input__
 *(see example files in input folder)*
@@ -39,11 +40,31 @@ NODATA_value  -2
 5 5 6 6 3 4 7 5 1 1
 2 2 6 6 3 4 7 3 3 3
 2 6 7 7 3 2 2 1 1 1</pre>
-This example shows a land use map with 8 land use classes distributed over 100 raster cells. For this example map (and the transition matrix given below) CoMOLA would generate a patch ID map with 39 different patches. The patch ID map is then encoded as a string of integers (each value is called a gene, representing the land use of a patch) to form the genome of the start individual, i.e. the first individual of the initial population. 
+This example shows a land use map with 8 land use classes distributed over 100 raster cells. For this example map (and the transition matrix given below) CoMOLA would generate a patch ID map with 39 different patches as shown below. 
 
-__Patch ID map (optional)__
+Automatically generated patch ID map (if not pre-defined by user): <pre>
+ncols         10
+nrows         10
+xllcorner     4376461.4080843
+yllcorner     5553063.2189224
+cellsize      75
+NODATA_value  -2
+1 2 2 3 3 4 4 5 6 6 
+7 2 2 3 8 8 9 10 11 0 
+7 12 3 3 13 13 9 9 14 14 
+15 12 16 16 0 0 17 17 17 17 
+15 18 18 19 20 0 0 21 22 22 
+23 18 18 24 25 0 0 21 22 26 
+27 28 28 28 25 0 29 30 22 26 
+27 27 31 31 32 33 29 30 26 26 
+34 34 31 31 32 33 29 35 35 35 
+34 36 37 37 32 38 38 39 39 39</pre>
 
-If appropriate provide your own Patch ID map as ascii file to delineate the spatial optimization units as needed in your specific case (with consecutive integer values representing the different patches, starting with value 1). For a cell-level optimization, an individual ID must be assigned to each cell. The spatial resolution must be the same as for the land use map. A value of 0 defines patches with a static land use. Whether a land use class is static or not must be also defined in the transition matrix (see below). Static land use classes will be excluded from the optimization.
+The patch ID map is then encoded as a string of integers (each value is called a gene, representing the land use of a patch) to form the genome of the start individual, i.e. the first individual of the initial population. 
+
+__Pre-defined patch ID map (optional)__
+
+If appropriate provide your own patch ID map as ascii file to delineate the spatial optimization units as needed in your specific case (with consecutive integer values representing the different patches, starting with value 1). For a cell-level optimization, an individual ID must be assigned to each cell. The spatial resolution must be the same as for the land use map. A value of 0 defines patches with a static land use. Whether a land use class is static or not must be also defined in the transition matrix (see below). Static land use classes will be excluded from the optimization.
 
 Example *(patch\_IDmap\_eachcell\_constraint.asc)*: <pre>
 ncols         10
@@ -99,7 +120,7 @@ CoMOLA handles up to four external models which must be provided as R scripts an
 
 ## __Configuration and optimization settings (config.ini)__
 
-All relevant settings, such as paths to input data and models as well as optimization-specific parameters and settings related to constraint-handling and raster map-analysis are managed in one single control file called "config.ini".
+All relevant settings, such as paths to input data and models as well as optimization-specific parameters and settings related to constraint-handling and raster map-analysis are managed in one single control file called "config.ini". Lines starting with a semicolon (;) are commented out and not used by the algorithm.
 
 config.ini example and description of variables: <pre>
 ; -----------------------------------------
@@ -219,8 +240,23 @@ file\_worst\_fitness = worst\_fitness\_values\_maximize.txt </pre>
 
 ## __Running CoMOLA__
 
-Call from the console (within your CoMOLA folder): <pre>
+Copy the whole file structure of CoMOLA to your working directory and run \_\_init\_\_.py from the console: <pre>
 python \_\_init\_\_.py </pre>
 
 You can limit the maximum number of threads to be used for parallel computation by adding "-t x" to the command, where x is the maximum number of threads, e.g. <pre>
 python \_\_init\_\_.py -t 2 </pre>
+
+## Output
+
+Once CoMOLA has been started, a log file (*Time\_Date\_optimization\_log.txt*) is generated in the *output* folder documenting the process of optimization.
+
+A successful run of CoMOLA will provide the following outputs:
+* fitness values for the best solutions (written at the end of the log file and in (*best\_solutions.csv*)
+* ascii maps for the best solutions 
+* the genome and fitness values of all individuals tested in the optimization (*individuals\_file.csv*)
+
+You may use the R-script (CoMOLA_postprocessing.R) provided in folder *output\_analysis* to extract, evaluate and plot the best solutions.
+
+Examplary results for an optimization of four objectives:
+
+![alt text](https://github.com/michstrauch/CoMOLA/tree/master/output_analysis/Example_output.png)
