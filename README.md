@@ -259,6 +259,7 @@ You may use the R-script (CoMOLA_postprocessing.R) provided in folder *output\_a
 
 Examplary results for an optimization of four objectives:
 <p align="left">
-  <img src="https://github.com/michstrauch/CoMOLA/tree/master/output_analysis/Example_output.png" width="350"/>
+  <img src="https://github.com/michstrauch/CoMOLA/tree/master/output_analysis/Example_output.png" width="700"/>
+  <img src="https://github.com/michstrauch/CoMOLA/tree/master/output_analysis/Example_output.png" width="700"/>
 </p>
 
