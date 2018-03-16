@@ -258,5 +258,7 @@ A successful run of CoMOLA will provide the following outputs:
 You may use the R-script (CoMOLA_postprocessing.R) provided in folder *output\_analysis* to extract, evaluate and plot the best solutions.
 
 Examplary results for an optimization of four objectives:
-![Screenshot](Example_output.png)
+<p align="left">
+  <img src="https://github.com/michstrauch/CoMOLA/tree/master/output_analysis/Example_output.png" width="350"/>
+</p>
 
