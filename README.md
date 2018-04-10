@@ -123,6 +123,7 @@ CoMOLA handles up to four external models which must be provided as R scripts an
 All relevant settings, such as paths to input data and models as well as optimization-specific parameters and settings related to constraint-handling and raster map-analysis are managed in one single control file called "config.ini". Lines starting with a semicolon (;) are commented out and not used by the algorithm.
 
 config.ini example and description of variables: <pre>
+[Dictionary]
 ; -----------------------------------------
 ; config\_model 
 , Variable                     Description:
