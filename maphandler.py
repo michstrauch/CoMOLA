@@ -2102,7 +2102,7 @@ def generate_parameter(random, args):
                 for m in np.nonzero(new_cand==i)[0]:
                     # index m+1 because of the exclusion of patch ID 0 of the optimization
                     sum_new += map_proportion[m+1]
-                if not (min_max_diff[1][np.nonzero(min_max_diff[0] == i)[0][0]] <= sum_new <= min_max_diff[2][np.nonzero(min_max_diff[0] == i)[0][0]]):
+                if not (min_max_diff[1][np.nonzero(min_max_diff[0] == i)[0][0]]-.00001 <= sum_new <= min_max_diff[2][np.nonzero(min_max_diff[0] == i)[0][0]]+.00001):
                     msg = "Error: Land use ID %s covers %s percent of the map and doesn`t match the min/max rules. Please check the input data." %(i, sum_new)
                     WriteLogMsg(msg) 
                     raise SystemError("Error: Land use ID %s covers %s percent of the map and doesn`t match the min/max rules. Please check the input data." %(i, sum_new))
