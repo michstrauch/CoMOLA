@@ -264,5 +264,6 @@ A successful run of CoMOLA will provide the following outputs:
 You may use the R-script (CoMOLA_postprocessing.R) provided in folder *output\_analysis* to extract, evaluate and plot the best solutions.
 
 Example plot:
+
 ![Example plot](output_analysis/Example_output.png)
 
