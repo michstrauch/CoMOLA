@@ -1,8 +1,11 @@
-# __CoMOLA__
+# CoMOLA - Constrained Multi-objective Optimization of Land use Allocation
+###### *Michael Strauch and Carola Pätzold*
+###### Contact: michael.strauch@ufz.de
 
+### About
 CoMOLA is a free Python tool to optimize the allocation of land use for multiple objectives. It builds upon the open source "inspyred" Python library and includes functions for reading, encoding and writing land use maps as well as genome generation and repair mutation algorithms for considering constraints during the optimization procedure. It runs on Windows and Linux and allows for the integration of any model whose prediction (e.g. a value for an ecosystem service) is based on a land use raster map. In its basic form, CoMOLA can be used immediately by inputting a raster map representing the status-quo land use, ready-to-run models written in R including their input data, and (optional) information on constraints. As constraints, the tool can consider (1) transition rules defining which type of land use can be converted into which other type and (2) minimum and maximum area proportions of each land use type within the study area. All relevant settings, such as paths to input data and models as well as optimization-specific parameters (e.g. population size, crossover and mutation rates) and settings related to constraint-handling and raster map-analysis are managed in one single control file ("config.ini").
 
-## __Installation requirements__
+## Installation requirements
 
 CoMOLA was developed and tested for Python 2.7.
 
@@ -14,10 +17,10 @@ CoMOLA was developed and tested for Python 2.7.
 Furthermore you need to install R to run external models.
 
 
-## __Input__
+## Input
 *(see example files in input folder)*
 
-### __Maps__
+### Maps
 
 __Land use map (required)__
 
@@ -85,7 +88,7 @@ NODATA_value  -2
 83 84 85 86 87 88 89 90 91 92</pre>
 In this example each cell is a patch and subject to optimization, except those cells with value 0 (which is here land use class 8). Be aware, the more patches you include the more complex is the optimization problem and the more computation time is needed. CoMOLA might perform poor if the numbers of patches is too large (>100).
 
-### __Constraints__
+### Constraints
 
 CoMOLA can handle two types of land use change constraints (simultaneously or stand-alone):
 
@@ -114,11 +117,11 @@ land_use 1 2 3 4 5 6 7 8
 min 0 0 0 0 0 10 10 0
 max 100 100 100 100 100 25 30 100</pre>
 
-## __External models__
+## External models
 
 CoMOLA handles up to four external models which must be provided as R scripts and stored in separate directories within the models folder (together with their specific input data). Each model evaluates the land use ascii map (as given above) for a specific objective that should be maximized (e.g. a certain ecosystem service). The output of each model is a single value representative for the whole study area (e.g. total agricultural yield) and needs to be written in a .csv file. If the objective value should be minimzed during optimization, multiply the model output with -1.
 
-## __Configuration and optimization settings (config.ini)__
+## Configuration and optimization settings (config.ini)
 
 All relevant settings, such as paths to input data and models as well as optimization-specific parameters and settings related to constraint-handling and raster map-analysis are managed in one single control file called "config.ini". Lines starting with a semicolon (;) are commented out and not used by the algorithm.
 
@@ -239,7 +242,7 @@ file\_transition = transition\_matrix.txt
 file\_area = min\_max.txt
 file\_worst\_fitness = worst\_fitness\_values\_maximize.txt </pre>
 
-## __Running CoMOLA__
+## Running CoMOLA
 
 Copy the whole file structure of CoMOLA to your working directory and run \_\_init\_\_.py from the console: <pre>
 python \_\_init\_\_.py </pre>
@@ -258,5 +261,5 @@ A successful run of CoMOLA will provide the following outputs:
 
 You may use the R-script (CoMOLA_postprocessing.R) provided in folder *output\_analysis* to extract, evaluate and plot the best solutions.
 
-![Example plot](https://github.com/michstrauch/CoMOLA/tree/master/output_analysis/Example_output.png)
+![Example plot](output_analysis/Example_output.png)
 
