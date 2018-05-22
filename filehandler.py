@@ -4,9 +4,8 @@
 #   Name:       filehandler.py
 #   Purpose:    This module is responsible for file operations 
 #
-#   Author:     Carola Paetzold, Christian Schweitzer
-#   Contact:    carola.paetzold@ufz.de
-#               christian.schweitzer@ufz.de
+#   Author:     Carola Paetzold, Christian Schweitzer, Michael Strauch
+#   Contact:    michael.strauch@ufz.de
 #
 #               Helmholtz Centre for Environmental Research - UFZ
 #               Department Computational Landscape Ecology - CLE
@@ -294,6 +293,7 @@ def summarize_console_outputs(number_individuals, number_generation,individuals,
             else:
                 model_folder = 'models_%s' %i
             subfolder_files = os.listdir(os.path.join(wrkDir, model_folder))
+            subfolder_files.sort()
             for k in subfolder_files:
                 # check if k is a folder
                 if os.path.isdir(os.path.join(wrkDir, model_folder, k)):
@@ -358,6 +358,7 @@ def collect_fitness_values(opt_algorithm, number_individuals, fitness, external_
             else:
                 model_folder = 'models_%s' %i
             subfolder_files = os.listdir(os.path.join(wrkDir, model_folder))
+            subfolder_files.sort()
             count_real_fitness = 0
             for k in subfolder_files:
                 # check if k is a folder

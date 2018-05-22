@@ -175,24 +175,24 @@ def execute_models(ind_number):
 
         # define maximum number of processes to run in parallel
         if options.nthreads == "max cpu cores":
-			nthreads = multiprocessing.cpu_count()			
+            nthreads = multiprocessing.cpu_count()
         else:
-			nthreads = int(options.nthreads)
+            nthreads = int(options.nthreads)
 
         # holds the multiprocessing processes
         jobs = []
         i = 0
 
-        # create the multiprocessing processes        
+        # create the multiprocessing processes
         while i < min(number_models, nthreads):
             p = multiprocessing.Process(target=process_handling,args=(work_queue,))
             jobs.append(p)
-            p.start() 
-            i += 1            
+            p.start()
+            i += 1
 
-        for j in jobs:        
+        for j in jobs:
             # wait until all multiprocessing processes are finished
-            j.join()           
+            j.join()
     else:
         msg = "The selected optimization algorithm is not implemented."
         WriteLogMsg(msg,ind_number)
@@ -243,12 +243,12 @@ def genome_process_handling(queue_arg):
 #------------------------------------------------------------------------------
 def evaluate(candidates, args):
     """Evaluate individuals."""   
-   
+
     individuals = candidates
-    
+
     # array for not accepted (infeasible) individuals
     not_accepted_ind = []
-    
+
     # increment the generation number
     global nmbr_generation
     nmbr_generation += 1
@@ -263,7 +263,7 @@ def evaluate(candidates, args):
     # list with infeasible individuals if constrained_tournament_selection is selected
     if 'constrained_tournament_selection' in cfg.ea.selector:
         infeasible_ind = []
-    
+
     # log the new population set
     for param in individuals:        
         if len(param) < 101:
@@ -274,7 +274,7 @@ def evaluate(candidates, args):
         # (genome consists of zeros)
         if all(item is 0 for item in param):
             not_accepted_ind.append(i)
-        
+
         # check if individuals are feasible and constrained_tournament_selection is not selected
         # or constrained_tournament_selection is selected -> run models for all individuals
         elif (('constrained_tournament_selection' not in cfg.ea.selector) and individual_filter(param) == True) or ('constrained_tournament_selection' in cfg.ea.selector):
@@ -289,79 +289,79 @@ def evaluate(candidates, args):
         else:
             not_accepted_ind.append(i) 
         i += 1
-    
+
     # transfer also the variables for map creation to the subprocesses
     map_info, patchID_map_info, header_all_info = get_from_maphandler() 
     queue_arg=[genome_queue, map_info, patchID_map_info, header_all_info]
-    
+
     # check/create helping models folder for multiprocessing
     fh.copy_models(i-1)
-    
+
     # a list with results for each individual
     fitness = []
 
     # count models
     number_models = 1
     try: 
-        file_model2  
-        number_models += 1   
-        file_model3  
-        number_models += 1 
-        file_model4  
-        number_models += 1 
+        file_model2
+        number_models += 1
+        file_model3
+        number_models += 1
+        file_model4
+        number_models += 1
     except:
         pass
-    
+
     # define maximum number of processes to run in parallel
     if options.nthreads == "max cpu cores":
-		nthreads = multiprocessing.cpu_count()
+        nthreads = multiprocessing.cpu_count()
     else:
-		nthreads = int(options.nthreads)
-		
+        nthreads = int(options.nthreads)
+
     # hold the multiprocessing processes
     jobs = []
     k = 0
-    
+
     # every multiprocess for an individual generates later maximum number_models multiprocesses
     # if you have 2 cores and 4 models than you should generate only one multiprocess 
     # in the first level because you need the 2 cores for the multiprocessing of the models
     processes = 1
     while (max(nthreads, number_models) >= (processes * number_models)) and processes < i:
         processes += 1
-        
+
     # create the multiprocessing processes
     while k < (processes-1):
         p = multiprocessing.Process(target=genome_process_handling,args=(queue_arg,))
         jobs.append(p)
         p.start() 
         k += 1
-        
+
     for j in jobs:
         # wait until all multiprocessing processes are finished
         j.join()
-        
+
     # Collect the fitness values of all individuals from one generation and return a list of them
     output_files = []
     external_models = []
-    
-    try: 
+
+    try:
         output_files.append(cfg.modelConfig.file_output1)
         output_files.append(cfg.modelConfig.file_output2)
         output_files.append(cfg.modelConfig.file_output3)
         output_files.append(cfg.modelConfig.file_output4)
-        
+
     except AttributeError:
         pass
-    
-    try: 
+
+    try:
         external_models.append(cfg.modelConfig.model1_folder)
         external_models.append(cfg.modelConfig.model2_folder)
         external_models.append(cfg.modelConfig.model3_folder)
         external_models.append(cfg.modelConfig.model4_folder)
-        
+
     except AttributeError:
         pass
-    
+
     # add the logging informations from the child processes in the optimization_log file
     fh.join_ind_number_log()
 
@@ -370,14 +370,14 @@ def evaluate(candidates, args):
     
     # collect the fitness values of all individuals and models
     fitness = fh.collect_fitness_values(opt_algorithm, i-1, fitness, external_models, output_files, not_accepted_ind, cfg.mapConfig.file_worst_fitness)
- 
+
     # for constrained_tournament_selection: print numbers of infeasible individuals  
     if 'constrained_tournament_selection' in cfg.ea.selector:
         WriteLogMsg("infeasible_ind: %s" % infeasible_ind)
-            
+
     msg = "Fitness values are: %r \n" % fitness
     WriteLogMsg(msg)
-    
+
     return fitness
 
 #------------------------------------------------------------------------------
@@ -385,21 +385,21 @@ def evaluate(candidates, args):
 #------------------------------------------------------------------------------
 def GA():
     """Starts the optimization with the GA algorithm."""   
-    
+
     begin = time.time()
     # initialize random generator with system time
     rand = random.Random()
-    rand.seed()  
-    
+    rand.seed()
+
     # original start individual of the input data
     global start_individual
-    
+
     # generate the original start individual from the input data
     # return it including the non static land use indices
     start_individual, nonstatic_elements = generate_genom(max_range, file_HRU,cfg.mapConfig.file_ASCII_map, 
                                       cfg.mapConfig.file_transformation, cfg.mapConfig.file_ID_map, 
                                       cfg.mapConfig.four_neighbours)
-    
+
     if len(start_individual) == 0:
         msg = "Error: The generated start individual has no elements."
         WriteLogMsg(msg) 
@@ -409,10 +409,10 @@ def GA():
     # determine that 'Bounder' conditions of candidates are equal to  
     # the integer values of the non static land use indices
     bounder_discrete = nonstatic_elements
-        
+
     # initialize inspyred log files  
     stats_file,individ_file = fh.init_inspyred_logfiles()  
-    
+
     # initialize and run GA
     ea = ec.GA(rand)
     # public attributes
@@ -541,37 +541,37 @@ def GA():
     # for constrained_tournament_selection: log the best feasible solutions in a csv file
     if 'constrained_tournament_selection' in cfg.ea.selector:
         fh.save_best_solutions(final_arc_feasible,1)
- 
+
 #------------------------------------------------------------------------------
 #   Nondominated Sorting Genetic Algorithm (NSGA-II)
 #------------------------------------------------------------------------------
 def NSGA2():
     """Starts the optimization with the NSGA-II algorithm."""   
-    
+
     begin = time.time()
     # initialize random generator with system time
     rand = random.Random()
     rand.seed()
-    
+
     # Generate the original start individual from input data
     # return it including the non static land use indices
     start_individual, nonstatic_elements = generate_genom(max_range, file_HRU,cfg.mapConfig.file_ASCII_map, 
                                       cfg.mapConfig.file_transformation, cfg.mapConfig.file_ID_map, 
                                       cfg.mapConfig.four_neighbours)
-    
+
     if len(start_individual) == 0:
         msg = "Error: The generated start individual has no elements."
         WriteLogMsg(msg) 
         raise SystemError("Error: The generated start individual has no elements.")
         close_window
-    
+
     # determine that 'Bounder' conditions of candidates are equal to 
     # the integer values of the non static land use indices
     bounder_discrete = nonstatic_elements
-    
+
     # initialize inspyred log files
     stats_file,individ_file = fh.init_inspyred_logfiles()
-    
+
     # initialize and run NSGA2
     ea = ec.emo.NSGA2(rand)
     # public attributes
@@ -605,7 +605,7 @@ def NSGA2():
     if cfg.ea.tournament_size != 2:
         msg = 'Tournament_size of the optimization algorithm changed to: %s' % cfg.ea.tournament_size
         WriteLogMsg(msg)
-    
+
     # run optimization, when finished final_pop holds the results
     final_pop = ea.evolve(generator = generate_parameter, 
                     # evaluate is the function to start external models
@@ -643,21 +643,21 @@ def NSGA2():
                     statistics_file = stats_file,
                     # individuals file
                     individuals_file = individ_file)                     
-                    
+
     final_arc = ea.archive
 
     # for constrained_tournament_selection: 
     # create a copy of final_arc only with feasible individuals (for csv file with best feasible solutions)
     if 'constrained_tournament_selection' in cfg.ea.selector:
         final_arc_feasible = []    
-    
+
     end = time.time()
     msg = "The optimization process needed %d seconds." %(end-begin)
     fh.WriteLogMsg(msg)
-    
+
     msg = 'Best Solutions: \n'
     WriteLogMsg(msg)
-    
+
     f_count=1
     for f in final_arc:
         # for constrained_tournament_selection: with information if individual is infeasible
@@ -720,12 +720,12 @@ def NSGA2():
     # 3 and 4 dimensional plots
     if (cfg.ea.plot_results == True and (len_fitness == 3 or len_fitness == 4)):
         import warnings 
-	
+
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=FutureWarning)
             from mpl_toolkits.mplot3d import Axes3D
             import matplotlib.pyplot as plt 
-		
+
             fig = plt.figure()
             ax = fig.add_subplot(111, projection='3d')
 
@@ -786,26 +786,25 @@ def NSGA2():
     
     # print results without plotting (if plot_results was set to false)
     if cfg.ea.plot_results == False:
-		if len_fitness == 2:
-			# log the best solutions in a csv file
-			fh.save_best_solutions(final_arc,2)
-			if 'constrained_tournament_selection' in cfg.ea.selector:
-				# log the best feasible solutions in a csv file
-				fh.save_best_solutions(final_arc_feasible,2)
-		if len_fitness == 3:
-			# log the best solutions in a csv file
-			fh.save_best_solutions(final_arc,3)
-			if 'constrained_tournament_selection' in cfg.ea.selector:
-				# log the best feasible solutions in a csv file
-				fh.save_best_solutions(final_arc_feasible,3)
-		if len_fitness == 4:
-			# log the best solutions in a csv file
-			fh.save_best_solutions(final_arc,4)
-			if 'constrained_tournament_selection' in cfg.ea.selector:
-				# log the best feasible solutions in a csv file
-				fh.save_best_solutions(final_arc_feasible,4)
-					
-		
+        if len_fitness == 2:
+            # log the best solutions in a csv file
+            fh.save_best_solutions(final_arc,2)
+            if 'constrained_tournament_selection' in cfg.ea.selector:
+                # log the best feasible solutions in a csv file
+                fh.save_best_solutions(final_arc_feasible,2)
+        if len_fitness == 3:
+            # log the best solutions in a csv file
+            fh.save_best_solutions(final_arc,3)
+            if 'constrained_tournament_selection' in cfg.ea.selector:
+                # log the best feasible solutions in a csv file
+                fh.save_best_solutions(final_arc_feasible,3)
+        if len_fitness == 4:
+            # log the best solutions in a csv file
+            fh.save_best_solutions(final_arc,4)
+            if 'constrained_tournament_selection' in cfg.ea.selector:
+                # log the best feasible solutions in a csv file
+                fh.save_best_solutions(final_arc_feasible,4)
+
 #------------------------------------------------------------------------------  
 #   Test functions
 #------------------------------------------------------------------------------   
