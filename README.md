@@ -1,5 +1,5 @@
 # CoMOLA - Constrained Multi-objective Optimization of Land use Allocation
-###### *Michael Strauch and Carola Pätzold*
+###### *Michael Strauch and Carola PÃ¤tzold*
 ###### Contact: michael.strauch@ufz.de
 
 ### About
@@ -16,7 +16,14 @@ CoMOLA was developed and tested for Python 2.7.
   * numpy
   * pylab
 
-Furthermore you need to install R to run external models.
+Furthermore you need to install R to run external models.  Also you need following R packages.
+
+* Required R packages
+  * randomForest
+  * raster
+  * Rccp
+  * rgdal
+  * sp
 
 
 ## Input
