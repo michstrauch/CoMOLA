@@ -1,6 +1,7 @@
 # CoMOLA - Constrained Multi-objective Optimization of Land use Allocation
 ###### *Michael Strauch and Carola Pätzold*
 ###### Contact: michael.strauch@ufz.de
+###### Main reference: [Strauch et al., 2019](https://doi.org/10.1016/j.envsoft.2019.05.003)
 
 ### About
 CoMOLA is a free Python tool to optimize the allocation of land use for multiple objectives. It builds upon the open source "inspyred" Python library and includes functions for reading, encoding and writing land use maps as well as genome generation and repair mutation algorithms for considering constraints during the optimization procedure. It runs on Windows and Linux and allows for the integration of any model whose prediction (e.g. a value for an ecosystem service) is based on a land use raster map. In its basic form, CoMOLA can be used immediately by inputting a raster map representing the status-quo land use, ready-to-run models written in R including their input data, and (optional) information on constraints. As constraints, the tool can consider (1) transition rules defining which type of land use can be converted into which other type and (2) minimum and maximum area proportions of each land use type within the study area. All relevant settings, such as paths to input data and models as well as optimization-specific parameters (e.g. population size, crossover and mutation rates) and settings related to constraint-handling and raster map-analysis are managed in one single control file ("config.ini").
