@@ -7,7 +7,7 @@ CoMOLA is a free Python tool to optimize the allocation of land use for multiple
 
 ![CoMOLA in a nutshell...](CoMOLA_flowchart.png)
 
-CoMOLA was systematically tested for different levels of complexity ([Strauch et al., 2019](https://doi.org/10.1016/j.envsoft.2019.05.003)) and applied for agricultural case studies in the Netherlands (Kromme Rijn, 219 km²) and Central Germany (Lossa, 141 km²) to best reconcile food production, biodiversity and other ecosystem services ([Verhagen et al., 2018](https://doi.org/10.1016/j.envsci.2018.03.013); Kaim et al., under review); it was also applied for optimizing a virtual urban region to foster plant species richness, climate regulation and compactness ([Schwarz et al., 2020](https://doi.org/10.3389/fenvs.2020.00016)).
+The tool was systematically tested for different levels of complexity ([Strauch et al., 2019](https://doi.org/10.1016/j.envsoft.2019.05.003)) and applied for agricultural case studies in the Netherlands (Kromme Rijn, 219 km²) and Central Germany (Lossa, 141 km²) to best reconcile food production, biodiversity and other ecosystem services ([Verhagen et al., 2018](https://doi.org/10.1016/j.envsci.2018.03.013); Kaim et al., under review); it was also applied for optimizing a virtual urban region to foster plant species richness, climate regulation and compactness ([Schwarz et al., 2020](https://doi.org/10.3389/fenvs.2020.00016)).
 
 ## Installation requirements
 
