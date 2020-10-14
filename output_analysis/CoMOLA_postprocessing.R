@@ -1,6 +1,5 @@
 # Required packages
 # install.packages("raster")
-# install.packages("SDMTooobj1")
 # install.packages("mco")
 # install.packages("plyr")
 # install.packages("ggplot2")
@@ -9,16 +8,15 @@
 library(mco)
 library(plyr)
 library(raster)
-library(SDMTooobj1)
 library(ggplot2)
 library(viridis)
 
 ## Define paths
 # to optimization results
-opt_path <- "C:/+STRAUCH+/+PAPER_WORK+/Opti-Tool/CoMOLA_basic/output"
+opt_path <- "C:/+PAPER_WORK+/Opti-Tool/CoMOLA_GitHub/output"
 
 # to some post-processing folder
-post_path <- "C:/+STRAUCH+/+PAPER_WORK+/Opti-Tool/CoMOLA_basic/output_analysis"
+post_path <- "C:/+PAPER_WORK+/Opti-Tool/CoMOLA_GitHub/output_analysis"
 
 # name of output metrics file
 file_out <- "metrics.txt"
@@ -34,7 +32,7 @@ if (any(grep("The optimization process needed", text) > 0)) {
 }
 
 if (any(grep("Best Solutions", text) > 0)) {
-  bestsol <- as.matrix(text[(grep("Best Solutions", text)+2):length(text)])
+  bestsol <- as.matrix(text[(grep("Best Solutions", text)+2):(length(text)-1)])
   infeasible <- grep("infeasible", bestsol)
   if (length(infeasible)>0) {
     feasible <- as.matrix(c(1:length(bestsol))[-infeasible])
@@ -69,7 +67,7 @@ if (any(grep("Best Solutions", text) > 0)) {
 # read in fitness values of best solutions
 best.sol <- read.table("bestfit.txt", h=F, sep =",")
 nobj <- length(best.sol)
-best.sol$ID <- c(1:dim(best.sol[1]))
+best.sol$ID <- c(1:dim(best.sol)[1])
 
 if(nobj==2){
   # extract only feasible solutions
@@ -337,3 +335,4 @@ if(length(sol)==4){
     xlab("Objective 1")+
     ylab("Objective 2")
 }
+
