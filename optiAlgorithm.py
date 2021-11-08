@@ -254,8 +254,8 @@ def evaluate(candidates, args):
     nmbr_generation += 1
 
     if len(individuals[0]) < 101:
-		msg = "Population for generation %d: " % nmbr_generation
-		WriteLogMsg(msg)
+        msg = "Population for generation %d: " % nmbr_generation
+        WriteLogMsg(msg)
     
     i = 1    
     genome_queue = multiprocessing.Queue()
@@ -267,8 +267,8 @@ def evaluate(candidates, args):
     # log the new population set
     for param in individuals:        
         if len(param) < 101:
-			msg = "%d, %r" % (i, param)
-			WriteLogMsg(msg)        
+            msg = "%d, %r" % (i, param)
+            WriteLogMsg(msg)        
         
         # check if individuals are subject to special_termination
         # (genome consists of zeros)
