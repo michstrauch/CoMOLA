@@ -2017,7 +2017,7 @@ def create_extreme_seed(land_use, maximize):
     # if generated individual is infeasible or excluded by the tabu memory
     # then return an empty list
     if individual_filter(new_cand) == False or check_impossible_candidates(new_cand) == True:
-        WriteLogMsg("create_extreme_seeds: No new extreme cover for land_use %s and maximize %s was founded." % (land_use, maximize))
+        WriteLogMsg("create_extreme_seeds: No new extreme cover for land_use %s and maximize %s was found." % (land_use, maximize))
         candidate_list.append("%s rejected: infeasible %s or excluded by impossible canddiate list %s" %(new_cand,individual_filter(new_cand),check_impossible_candidates(new_cand)))
         new_cand = []    
     else:
