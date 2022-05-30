@@ -1180,7 +1180,7 @@ def logical_variator(candidate, first_generation='False'):
                     # line for printing the checked new_cand and information of the generation process
                     candidate_list.append("%s" %['preliminary result'])
                     if cfg.ea.write_tabu_memory == True:
-						WriteCandidateList(candidate_list) 
+                        WriteCandidateList(candidate_list) 
 
                 # use the land use which was determined in a plausibility check before, if it is possible
                 if next_position > 0 and next_position in option_elements:
@@ -1452,7 +1452,7 @@ def logical_variator(candidate, first_generation='False'):
     end = time.time()
     WriteLogMsg("The generation of a new candidate needed %d seconds." %(end-begin))
     if len(start_individual) < 100:
-		WriteLogMsg("%r" % new_cand)
+        WriteLogMsg("%r" % new_cand)
 
 
     # line for printing the checked new_cand and information of the generation process
