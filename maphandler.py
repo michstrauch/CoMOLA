@@ -417,10 +417,10 @@ def read_patch_ID_map(file, map, NODATA_value, static_elements, four_neighbours)
                     # check that cell is not a static element or NODATA_value
                     if static_elements.count(map[row, col])!=0 or map[row,col]==int(NODATA_value):
                         error_dic.update({"(%s,%s)" %(row, col) : "non-zero but static element or NODATA_value" })
-                    # if file_HRU == None than check that patch ID was not registered in the genome before
+                    # if file_HRU == None then check that patch ID was not registered in the genome before
                     elif cfg.mapConfig.file_HRU == 'None' and genom[patches[row,col]-1] != 0:
                         error_dic.update({"(%s,%s)" %(row, col) : "non-zero but patch ID is used for more than one patch" })
-                    # if file_HRU != None than check if land use of the two patches are equal
+                    # if file_HRU != None then check if land use of the two patches are equal
                     elif cfg.mapConfig.file_HRU != 'None' and genom[patches[row,col]-1] != 0 and genom[patches[row,col]-1] != map[row,col]:
                         error_dic.update({"(%s,%s)" %(row, col) : "non-zero but patch ID is used for more than one land use" })
                     # plausibility checks are okay, then
@@ -435,7 +435,7 @@ def read_patch_ID_map(file, map, NODATA_value, static_elements, four_neighbours)
                 # mark the scanned cell in help_map 
                 # so the cell is not scanned again by the determine_IDmap_patch_elements
                 help_map[row,col] = 1 
-    # if atleast one plausibility check was not succesfull
+    # if at least one plausibility check was not succesfull
     # print the error messages and stop the program
     if len(error_dic) != 0:
         msg = "Error: Some cells of the patch ID map break the plausibility rules. Please check."
@@ -1180,7 +1180,7 @@ def logical_variator(candidate, first_generation='False'):
                     # line for printing the checked new_cand and information of the generation process
                     candidate_list.append("%s" %['preliminary result'])
                     if cfg.ea.write_tabu_memory == True:
-                        WriteCandidateList(candidate_list) 
+						WriteCandidateList(candidate_list) 
 
                 # use the land use which was determined in a plausibility check before, if it is possible
                 if next_position > 0 and next_position in option_elements:
@@ -1452,7 +1452,7 @@ def logical_variator(candidate, first_generation='False'):
     end = time.time()
     WriteLogMsg("The generation of a new candidate needed %d seconds." %(end-begin))
     if len(start_individual) < 100:
-        WriteLogMsg("%r" % new_cand)
+		WriteLogMsg("%r" % new_cand)
 
 
     # line for printing the checked new_cand and information of the generation process
