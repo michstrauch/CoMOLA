@@ -37,38 +37,29 @@
 #------------------------------------------------------------------------------
 import os
 import sys
-import re
+import importlib
 import config as cfg
 
 #------------------------------------------------------------------------------  
 #   Check the Python Version and requirements of the tool
 #------------------------------------------------------------------------------
 def check_requirements():
-    """Check the Python Version and requirements of the tool."""
-    
     # path to the used Python version
-    python_folder = os.path.commonprefix([x for x in sys.path if re.search('Python', x)])
-    # if Python version > 2 then the user get a message Python 2.7 or earlier needed
-    if not sys.version_info[:2] == (2, 7):
-        # run with versions < 2.7 not tested
-        if sys.version_info[0] > (2):
-            print ("Warning: The tool is testet for Python 2.7 and 3.3. You started the tool with Python version from %s." %python_folder)
-            # test Python 3
-            #close_window()      
-    # path to the site-packages folder
-    #print ("sys.path: %s" %sys.path)
-    python_libfolder = os.path.commonprefix([x for x in sys.path if re.search('site-packages', x)])
-    # print ("python_libfolder: %s" %python_libfolder)
+    python_folder = sys.executable
+    accepted_versions = [(3,9),(3,10),(3,11)] 
+    # check for accepted python versions
+    if not sys.version_info[:2] in accepted_versions:
+        print ("Warning: The tool is testet for Python 3.11. You started the tool with Python version from %s." %python_folder)  
     # check if the libraries matplotlib and RPy2 exist
-    matplotlib_exist = os.path.exists(os.path.join(python_libfolder,"matplotlib"))
-    rpy2_exist = os.path.exists(os.path.join(python_libfolder,"rpy2"))
+    matplotlib_exist = importlib.util.find_spec("matplotlib")
+    rpy2_exist = importlib.util.find_spec("rpy2")
     if not matplotlib_exist:
         if not rpy2_exist:
             print("Error, you need the matplotlib library but it is not installed in Python version from %s. If you would like to use RPy2 than you should install RPy2 too." %python_folder)
         else:
             print("Error, you need the matplotlib library but it is not installed in Python version from %s." %python_folder)
         close_window()     
-    # matplotlib exist, check if RPy2 is used and installed
+    #  matplotlib exist, check if RPy2 is used and installed
     elif cfg.modelConfig.RPy2_available == "True" and not rpy2_exist:
         #if not rpy2_exist:
         print("Error, you want use RPy2 but it is not installed in Python version from %s." %python_folder)

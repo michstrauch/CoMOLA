@@ -12,12 +12,10 @@ The tool was systematically tested for different levels of complexity ([Strauch 
 
 ## Installation requirements
 
-CoMOLA was developed and tested for Python 2.7.
+CoMOLA was developed and tested for Python 3.9 and above.
 
 * Required Python packages
   * matplotlib
-  * numpy
-  * pylab
 
 Furthermore you need to install R to run external models.
 

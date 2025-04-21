@@ -10,13 +10,14 @@ library(plyr)
 library(raster)
 library(ggplot2)
 library(viridis)
+library(here)
 
 ## Define paths
 # to optimization results
-opt_path <- "C:/+PAPER_WORK+/Opti-Tool/CoMOLA_GitHub/output"
+opt_path <- here('output')
 
 # to some post-processing folder
-post_path <- "C:/+PAPER_WORK+/Opti-Tool/CoMOLA_GitHub/output_analysis"
+post_path <- here('output_analysis')
 
 # name of output metrics file
 file_out <- "metrics.txt"

@@ -292,8 +292,8 @@ def summarize_console_outputs(number_individuals, number_generation,individuals,
                 model_folder = 'models'
             else:
                 model_folder = 'models_%s' %i
-            subfolder_files = os.listdir(os.path.join(wrkDir, model_folder))
-            subfolder_files.sort()
+            subfolder_files = external_models
+            #subfolder_files.sort() victor
             for k in subfolder_files:
                 # check if k is a folder
                 if os.path.isdir(os.path.join(wrkDir, model_folder, k)):
@@ -357,8 +357,7 @@ def collect_fitness_values(opt_algorithm, number_individuals, fitness, external_
                 model_folder = 'models'
             else:
                 model_folder = 'models_%s' %i
-            subfolder_files = os.listdir(os.path.join(wrkDir, model_folder))
-            subfolder_files.sort()
+            subfolder_files = external_models
             count_real_fitness = 0
             for k in subfolder_files:
                 # check if k is a folder
@@ -571,11 +570,11 @@ def run_model(file_path, file_path_R, file_path_python, RPy2, number):
         WriteLogMsg(msg, number)
         raise SystemError("Error in executing external model. File does not exist. %s" % file_path)
         req.close_window
-    elif not os.path.isfile(file_path_R):
-        msg = "Error in executing external model %s. File does not exist." % file_path_R
-        WriteLogMsg(msg, number)
-        raise SystemError("Error in executing external model. File does not exist. %s" % file_path_R)
-        req.close_window
+    #elif not os.path.isfile(file_path_R):
+    #    msg = "Error in executing external model %s. File does not exist." % file_path_R
+    #    WriteLogMsg(msg, number)
+    #    raise SystemError("Error in executing external model. File does not exist. %s" % file_path_R)
+    #    req.close_window
     elif not os.path.isfile(file_path_python):
         msg = "Error in executing external model %s. File does not exist." % file_path_python
         WriteLogMsg(msg, number)
@@ -653,7 +652,7 @@ def run_model(file_path, file_path_R, file_path_python, RPy2, number):
           
             # or only the output lines will be documented
             # via append sink() in the R file 
-            cmd = [file_path_R, 'CMD', 'BATCH', file_path]  
+            cmd = [file_path_R, 'CMD', 'BATCH', file_path]
             begin=time.time()
             subprocess.check_call(cmd)
             end=time.time()
