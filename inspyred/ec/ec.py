@@ -112,9 +112,9 @@ class Bounder(object):
         self.lower_bound = lower_bound
         self.upper_bound = upper_bound
         if self.lower_bound is not None and self.upper_bound is not None:
-            if not isinstance(self.lower_bound, collections.Iterable):
+            if not isinstance(self.lower_bound, collections.abc.Iterable):
                 self.lower_bound = itertools.repeat(self.lower_bound)
-            if not isinstance(self.upper_bound, collections.Iterable):
+            if not isinstance(self.upper_bound, collections.abc.Iterable):
                 self.upper_bound = itertools.repeat(self.upper_bound)
 
     def __call__(self, candidate, args):
@@ -123,9 +123,9 @@ class Bounder(object):
         if self.lower_bound is None or self.upper_bound is None:
             return candidate
         else:
-            if not isinstance(self.lower_bound, collections.Iterable):
+            if not isinstance(self.lower_bound, collections.abc.Iterable):
                 self.lower_bound = [self.lower_bound] * len(candidate)
-            if not isinstance(self.upper_bound, collections.Iterable):
+            if not isinstance(self.upper_bound, collections.abc.Iterable):
                 self.upper_bound = [self.upper_bound] * len(candidate)
             bounded_candidate = candidate
             for i, (c, lo, hi) in enumerate(zip(candidate, self.lower_bound, 
@@ -161,9 +161,9 @@ class DiscreteBounder(object):
         self.upper_bound = itertools.repeat(max(self.values))
 
     def __call__(self, candidate, args):
-        if not isinstance(self.lower_bound, collections.Iterable):
+        if not isinstance(self.lower_bound, collections.abc.Iterable):
             self.lower_bound = [min(self.values)] * len(candidate)
-        if not isinstance(self.upper_bound, collections.Iterable):
+        if not isinstance(self.upper_bound, collections.abc.Iterable):
             self.upper_bound = [max(self.values)] * len(candidate)
         closest = lambda target: min(self.values, key=lambda x: abs(x-target))
         bounded_candidate = candidate
@@ -356,7 +356,7 @@ class EvolutionaryComputation(object):
     def _should_terminate(self, pop, ng, ne):
         terminate = False
         fname = ''
-        if isinstance(self.terminator, collections.Iterable):
+        if isinstance(self.terminator, collections.abc.Iterable):
             for clause in self.terminator:
                 self.logger.debug('termination test using {0} at generation {1} and evaluation {2}'.format(clause.__name__, ng, ne))
                 terminate = terminate or clause(population=pop, num_generations=ng, num_evaluations=ne, args=self._kwargs)
@@ -373,7 +373,7 @@ class EvolutionaryComputation(object):
         return terminate
         
     
-    def evolve(self, generator, evaluator, pop_size=100, seeds=None, maximize=True, bounder=None, **args):
+    def evolve(self, generator, evaluator, pop_size=100, seeds=None, maximize=True, bounder=None, is_available = None, custom_individual =[], previous_arc =None, **args):
         """Perform the evolution.
         
         This function creates a population and then runs it through a series
@@ -417,17 +417,20 @@ class EvolutionaryComputation(object):
         self.bounder = bounder
         self.maximize = maximize
         self.population = []
-        self.archive = []
+        if is_available == True:
+            self.archive = previous_arc
+        else:
+            self.archive = []
         
         # Create the initial population.
-        if not isinstance(seeds, collections.Sequence):
+        if not isinstance(seeds, collections.abc.Sequence):
             seeds = [seeds]
         initial_cs = copy.copy(seeds)
         num_generated = max(pop_size - len(seeds), 0)
         i = 0
         self.logger.debug('generating initial population')
         while i < num_generated:
-            cs = generator(random=self._random, args=self._kwargs)
+            cs = generator(random=self._random, args=self._kwargs, custom_individual= custom_individual)
             initial_cs.append(cs)
             i += 1
         self.logger.debug('evaluating initial population')
@@ -450,7 +453,7 @@ class EvolutionaryComputation(object):
         self.logger.debug('archive size is now {0}'.format(len(self.archive)))
         self.logger.debug('population size is now {0}'.format(len(self.population)))
                 
-        if isinstance(self.observer, collections.Iterable):
+        if isinstance(self.observer, collections.abc.Iterable):
             for obs in self.observer:
                 self.logger.debug('observation using {0} at generation {1} and evaluation {2}'.format(obs.__name__, self.num_generations, self.num_evaluations))
                 obs(population=list(self.population), num_generations=self.num_generations, num_evaluations=self.num_evaluations, args=self._kwargs)
@@ -466,7 +469,7 @@ class EvolutionaryComputation(object):
             parent_cs = [copy.deepcopy(i.candidate) for i in parents]
             offspring_cs = parent_cs
             
-            if isinstance(self.variator, collections.Iterable):
+            if isinstance(self.variator, collections.abc.Iterable):
                 for op in self.variator:
                     self.logger.debug('variation using {0} at generation {1} and evaluation {2}'.format(op.__name__, self.num_generations, self.num_evaluations))
                     offspring_cs = op(random=self._random, candidates=offspring_cs, args=self._kwargs)
@@ -505,7 +508,7 @@ class EvolutionaryComputation(object):
             self.logger.debug('population size is now {0}'.format(len(self.population)))
             
             self.num_generations += 1
-            if isinstance(self.observer, collections.Iterable):
+            if isinstance(self.observer, collections.abc.Iterable):
                 for obs in self.observer:
                     self.logger.debug('observation using {0} at generation {1} and evaluation {2}'.format(obs.__name__, self.num_generations, self.num_evaluations))
                     obs(population=list(self.population), num_generations=self.num_generations, num_evaluations=self.num_evaluations, args=self._kwargs)

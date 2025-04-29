@@ -49,7 +49,26 @@ import time
 def default_observer(population, num_generations, num_evaluations, args):
     """Do nothing."""    
     pass
-    
+
+import csv
+import os
+
+def save_pareto_archive(archive, generation):
+    """Save the Pareto archive to a CSV file after each generation."""
+    file_path = "output/pareto_archive.csv"
+    file_exists = os.path.exists(file_path)
+
+    with open(file_path, "w", newline="") as file:  # Append mode
+        writer = csv.writer(file)
+        writer.writerow(["Generation", "candidate", "fitness"])  # Write headers
+        
+        for f in archive:
+            writer.writerow([generation, f.candidate, list(f.fitness)])
+
+def pareto_archive_observer(population, num_generations, num_evaluations, args):
+    """Observer function to save the Pareto archive after each generation."""
+    ea = args["_ec"]  # Get the evolutionary algorithm object
+    save_pareto_archive(ea.archive, num_generations)  # Save archive
 
 def best_observer(population, num_generations, num_evaluations, args):
     """Print the best individual in the population to the screen.

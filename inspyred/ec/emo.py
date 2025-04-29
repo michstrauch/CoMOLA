@@ -141,10 +141,11 @@ class NSGA2(ec.EvolutionaryComputation):
         self.replacer = ec.replacers.nsga_replacement
         self.selector = ec.selectors.tournament_selection
     
-    def evolve(self, generator, evaluator, pop_size=100, seeds=None, maximize=True, bounder=None, **args):
+    def evolve(self, generator, evaluator, pop_size=100, seeds=None, maximize=True, bounder=None, is_available = None, custom_individual= [],archive = None, **args):
         args.setdefault('num_selected', pop_size)
         args.setdefault('tournament_size', 2)
-        return ec.EvolutionaryComputation.evolve(self, generator, evaluator, pop_size, seeds, maximize, bounder, **args)
+        previous_arc = archive
+        return ec.EvolutionaryComputation.evolve(self, generator, evaluator, pop_size, seeds, maximize, bounder, is_available, custom_individual, previous_arc, **args)
 
     
 class PAES(ec.EvolutionaryComputation):

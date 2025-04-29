@@ -4,7 +4,8 @@
 #   Name:       optiAlgorithm.py
 #   Purpose:    This module provides the optimization algorithms.
 #
-#   Author:     Carola Paetzold, Christian Schweitzer, Michael Strauch
+#   Author:     Carola Paetzold, Christian Schweitzer, Michael Strauchpip install numpy==1.25.2
+
 #   Contact:    michael.strauch@ufz.de
 
 #               Helmholtz Centre for Environmental Research - UFZ
@@ -36,6 +37,10 @@
 #   Imports
 #------------------------------------------------------------------------------
 import random
+import csv
+import glob
+import ast
+
 import os
 import sys
 import time
@@ -98,7 +103,10 @@ opt_algorithm = cfg.modelConfig.opt_algorithm
 max_range = cfg.modelConfig.max_range
 
 # number of current generation
+global nmbr_generation
 nmbr_generation = 0
+global custom_individuals
+custom_individuals =[]
 
 # array for the start individual
 start_individual = []
@@ -272,7 +280,7 @@ def evaluate(candidates, args):
         
         # check if individuals are subject to special_termination
         # (genome consists of zeros)
-        if all(item is 0 for item in param):
+        if all(item == 0 for item in param):
             not_accepted_ind.append(i)
 
         # check if individuals are feasible and constrained_tournament_selection is not selected
@@ -553,11 +561,86 @@ def NSGA2():
     rand = random.Random()
     rand.seed()
 
-    # Generate the original start individual from input data
-    # return it including the non static land use indices
-    start_individual, nonstatic_elements = generate_genom(max_range, file_HRU,cfg.mapConfig.file_ASCII_map, 
+    global start_individual  
+    global nmbr_generation
+    global custom_individuals
+    
+    archive_is_available = False
+    previous_archive = []
+
+
+    if cfg.ea.start_from_previous_gen == True:
+        generation_files = glob.glob("output/*_individuals_file.csv")  # Adjust path if necessary
+        if generation_files:
+            ea = ec.emo.NSGA2(rand)
+            from inspyred.ec import Individual
+            from inspyred.ec.emo import Pareto
+            # Load the previously saved Pareto archive if it exists
+            pareto_archive_file = "output/pareto_archive.csv"
+            if os.path.exists(pareto_archive_file):
+                with open(pareto_archive_file, "r") as file:
+                    reader = csv.reader(file)
+                    next(reader)  # Skip header
+                    ea.archive = []
+                    #ea.archive = [ec.emo.Pareto(eval(row[1]), eval(row[2])) for row in reader]
+                    for row in reader:
+                        candidate = eval(row[1])  # Assuming it's stored in a serializable format
+                        fitness_vals = eval(row[2])
+                        ind = Individual(candidate=candidate)
+                        ind.fitness = Pareto(fitness_vals)
+                        ea.archive.append(ind)
+                print(f"Resumed Pareto front with {len(ea.archive)} individuals.")
+                archive_is_available = True
+                previous_archive = ea.archive
+            else:
+                print("No previous Pareto front archive found. Starting fresh.")
+
+            # Sort files lexicographically to find the latest generation file
+            generation_files.sort()
+            last_saved_generation_file = generation_files[-1]  # Get the most recent file
+            with open(last_saved_generation_file, mode='r') as file:
+                reader = csv.reader(file)
+                header = next(reader)  # Skip the header
+                data = list(reader)
+                nested_list = []
+
+
+                if data:
+                    # Parse the last generation number
+                    nmbr_generation = int(data[-1][0])  # Last row's generation number
+
+                    # Extract the populations from lst generation
+                    last_five_rows = data[-cfg.ea.pop_size:]
+                    for row in last_five_rows:
+                        # Extract columns from the 6th index onward
+                        extracted_row = row[6:]  # Index 6 corresponds to column 7
+                        # Convert values to integers and remove brackets if present
+                        #cleaned_row = [int(value.strip("[]")) for value in extracted_row]
+                        cleaned_row = [int(value.strip("[] ").strip()) for value in extracted_row]
+                        # Append the cleaned row to the nested list
+                        nested_list.append(cleaned_row)
+                        custom_individuals.append(cleaned_row)
+
+                    start_individual= nested_list
+                    # Generate nonstatic elements
+                    nonstatic_elements = generate_genom(
+                        max_range, file_HRU, cfg.mapConfig.file_ASCII_map,
+                        cfg.mapConfig.file_transformation, cfg.mapConfig.file_ID_map,
+                        cfg.mapConfig.four_neighbours, return_only_nonstatic=True)
+                else:
+                    raise ValueError("The most recent file exists but contains no data.")
+
+            msg = f"Resuming from generation {nmbr_generation}: {last_saved_generation_file}"
+            WriteLogMsg(msg)
+    else:
+        # generate the original start individual from the input data
+        # return it including the non static land use indices
+        start_individual, nonstatic_elements = generate_genom(max_range, file_HRU,cfg.mapConfig.file_ASCII_map, 
                                       cfg.mapConfig.file_transformation, cfg.mapConfig.file_ID_map, 
-                                      cfg.mapConfig.four_neighbours)
+                                      cfg.mapConfig.four_neighbours, return_only_nonstatic=False)
+        print(f"Starting  with the individuals: {start_individual}")
+
+        ea = ec.emo.NSGA2(rand)
 
     if len(start_individual) == 0:
         msg = "Error: The generated start individual has no elements."
@@ -573,7 +656,7 @@ def NSGA2():
     stats_file,individ_file = fh.init_inspyred_logfiles()
 
     # initialize and run NSGA2
-    ea = ec.emo.NSGA2(rand)
+    #ea = ec.emo.NSGA2(rand)
     # public attributes
     # NSGA2 is predefined with tournament_selection
     if cfg.ea.selector != 'tournament_selection':
@@ -605,7 +688,18 @@ def NSGA2():
     if cfg.ea.tournament_size != 2:
         msg = 'Tournament_size of the optimization algorithm changed to: %s' % cfg.ea.tournament_size
         WriteLogMsg(msg)
+  
+    from inspyred.ec import observers  # Import existing observers
+    from inspyred.ec.observers import pareto_archive_observer  # Import the new observer
+    # Ensure all necessary observers are included
+    ea.observer = [observers.file_observer, observers.best_observer, pareto_archive_observer]
 
+    if not ea.archive:
+        print("⚠ Warning: Pareto archive is empty before evolution starts.")
+    else:
+        print(f"✅ Archive loaded successfully with {len(ea.archive)} individuals.")
+    
+    remaining_generations = cfg.ea.max_generations - nmbr_generation
     # run optimization, when finished final_pop holds the results
     final_pop = ea.evolve(generator = generate_parameter, 
                     # evaluate is the function to start external models
@@ -621,7 +715,7 @@ def NSGA2():
                     # minimum population diversity allowed (when using diversity_termination default 0.001)
                     min_diversity = cfg.ea.min_diversity,
                     # maximum number of generations  
-                    max_generations = cfg.ea.max_generations,
+                    max_generations = remaining_generations,
                     # maximum number of evaluations (default pop_size) 
                     max_evaluations = cfg.ea.max_evaluations,
                     # number of elites to consider (default 0)                    
@@ -642,7 +736,10 @@ def NSGA2():
                     # statistic file
                     statistics_file = stats_file,
                     # individuals file
-                    individuals_file = individ_file)                     
+                    individuals_file = individ_file, 
+                    is_available = archive_is_available, 
+                    archive = previous_archive, 
+                    custom_individual= custom_individuals)                     
 
     final_arc = ea.archive
 
@@ -812,7 +909,7 @@ if __name__ == "__main__":
 
     start_individual, nonstatic_elements = generate_genom(max_range, file_HRU,cfg.mapConfig.file_ASCII_map, 
                                   cfg.mapConfig.file_transformation, cfg.mapConfig.file_ID_map, 
-                                  cfg.mapConfig.four_neighbours)
+                                  cfg.mapConfig.four_neighbours, return_only_nonstatic = False)
     """print("pop Laenge: %s" %len(pop))
     print("pop type: %s" %type(pop))
     print("Listenelemente:")
