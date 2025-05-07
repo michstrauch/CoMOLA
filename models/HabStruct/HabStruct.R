@@ -1869,4 +1869,15 @@ write.table(edges, "HabStruct_output.csv",append=FALSE ,sep =";",col.names=FALSE
 
 
 
+
+
+
+
+
+
+
+
+
+
+
 sink()

@@ -373,7 +373,7 @@ class EvolutionaryComputation(object):
         return terminate
         
     
-    def evolve(self, generator, evaluator, pop_size=100, seeds=None, maximize=True, bounder=None, is_available = None, custom_individual =[], previous_arc =None, **args):
+    def evolve(self, generator, evaluator, pop_size=100, seeds=None, maximize=True, bounder=None, is_available = None, custom_individual =[], previous_arc =None, num_generation = 0, **args):
         """Perform the evolution.
         
         This function creates a population and then runs it through a series
@@ -419,8 +419,10 @@ class EvolutionaryComputation(object):
         self.population = []
         if is_available == True:
             self.archive = previous_arc
+            self.num_generations = num_generation + 1
         else:
             self.archive = []
+            self.num_generations = 0
         
         # Create the initial population.
         if not isinstance(seeds, collections.abc.Sequence):
@@ -446,7 +448,7 @@ class EvolutionaryComputation(object):
         self.logger.debug('population size is now {0}'.format(len(self.population)))
         
         self.num_evaluations = len(initial_fit)
-        self.num_generations = 0
+        #self.num_generations = 0
         
         self.logger.debug('archiving initial population')
         self.archive = self.archiver(random=self._random, population=list(self.population), archive=list(self.archive), args=self._kwargs)
