@@ -4,8 +4,7 @@
 #   Name:       optiAlgorithm.py
 #   Purpose:    This module provides the optimization algorithms.
 #
-#   Author:     Carola Paetzold, Christian Schweitzer, Michael Strauchpip install numpy==1.25.2
-
+#   Author:     Carola Paetzold, Christian Schweitzer, Michael Strauch
 #   Contact:    michael.strauch@ufz.de
 
 #               Helmholtz Centre for Environmental Research - UFZ
@@ -608,6 +607,12 @@ def NSGA2():
                 if data:
                     # Parse the last generation number
                     nmbr_generation = int(data[-1][0])  # Last row's generation number
+                    if cfg.ea.max_generations <= nmbr_generation:
+                        msg = (f"Configured maximum generations ({cfg.ea.max_generations}) "
+                               f"is less than or equal to the last saved generation ({nmbr_generation}). "
+                               f"No further generation is performed")
+                        WriteLogMsg(msg)
+                        return 
 
                     # Extract the populations from lst generation
                     last_five_rows = data[-cfg.ea.pop_size:]
@@ -699,7 +704,7 @@ def NSGA2():
     else:
         print(f"✅ Archive loaded successfully with {len(ea.archive)} individuals.")
     
-    remaining_generations = cfg.ea.max_generations - nmbr_generation
+    #remaining_generations = cfg.ea.max_generations - nmbr_generation
     # run optimization, when finished final_pop holds the results
     final_pop = ea.evolve(generator = generate_parameter, 
                     # evaluate is the function to start external models
@@ -715,7 +720,7 @@ def NSGA2():
                     # minimum population diversity allowed (when using diversity_termination default 0.001)
                     min_diversity = cfg.ea.min_diversity,
                     # maximum number of generations  
-                    max_generations = remaining_generations,
+                    max_generations = cfg.ea.max_generations,
                     # maximum number of evaluations (default pop_size) 
                     max_evaluations = cfg.ea.max_evaluations,
                     # number of elites to consider (default 0)                    
@@ -739,7 +744,7 @@ def NSGA2():
                     individuals_file = individ_file, 
                     is_available = archive_is_available, 
                     archive = previous_archive, 
-                    custom_individual= custom_individuals)                     
+                    custom_individual= custom_individuals, num_generation = nmbr_generation)                     
 
     final_arc = ea.archive
 
